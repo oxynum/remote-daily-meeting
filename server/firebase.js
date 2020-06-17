@@ -2,41 +2,43 @@ const admin = require('firebase-admin');
 
 class FirebaseConnection {
   constructor() {
-    let serviceAccount = require('./gcloud/sak.json');
+    let serviceAccountKey = require('./config/serviceAccountKey.json');
 
     admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
+      credential: admin.credential.cert(serviceAccountKey)
     });
     
     this.db = admin.firestore();
   }
 
-  registerUser(user) {
-    try {
-      let collectionRef = this.db.collection('users')
-    
-      collectionRef.add(user).then(documentReference => {
-        console.log(`Added document with name: ${documentReference.id}`);
-      });
-    } catch(err) {
-      console.log(err);
-    }
-  }
+  async getAllUsers() {
+    var response = []
 
-  printAllUsers() {
-    this.db.collection('users').get()
+    await this.db.collection('users').get()
     .then((snapshot) => {
-      console.log('--------------');
-      console.log('Users : ');
-      console.log('--------------');
       snapshot.forEach((doc) => {
-        console.log(doc.id, '=>', doc.data());
-        console.log('-------');
+        response.push(doc.data());
       });
     })
     .catch((err) => {
       console.log('Error getting documents', err);
     });
+
+    
+    return { "users" : response };
+  }
+
+  checkAuth(req, res, next) {
+    if (req.headers.authtoken || req.path==='/auth') {
+      admin.auth().verifyIdToken(req.headers.authtoken)
+        .then(() => {
+          next()
+        }).catch(() => {
+          res.status(403).send('Unauthorized')
+        });
+    } else {
+      res.status(403).send('Unauthorized')
+    }
   }
 }
 
