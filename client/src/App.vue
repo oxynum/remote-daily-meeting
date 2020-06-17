@@ -23,17 +23,17 @@
           <v-list-item-group
             v-model="group"
           >
-            <v-list-item>
+            <v-list-item @click="$router.push('/')">
               <v-list-item-icon>
                 <v-icon>mdi-home</v-icon>
               </v-list-item-icon>
-              <v-list-item-title>Home</v-list-item-title>
+              <v-list-item-title>Accueil</v-list-item-title>
             </v-list-item>
-            <v-list-item>
+            <v-list-item @click="$router.push('/signup')">
               <v-list-item-icon>
                 <v-icon>mdi-account</v-icon>
               </v-list-item-icon>
-              <v-list-item-title>Account</v-list-item-title>
+              <v-list-item-title>Inscription</v-list-item-title>
             </v-list-item>
           </v-list-item-group>
         </v-list>
