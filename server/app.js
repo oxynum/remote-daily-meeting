@@ -12,15 +12,11 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
+app.use(fbCon.checkAuth);
+
 app.get('/user/list', async function (req, res) {
-  fbCon.printAllUsers();
+  res.send(await fbCon.getAllUsers());
 })
-
-app.post('/user/new',(request,response) => {
-  console.log(request.body);
-  fbCon.registerUser(request.body);
-});
-
 
 app.listen(3000, function () {
   console.log('Web server listening on port 3000')
