@@ -1,21 +1,245 @@
 <template>
   <div class="home">
-    <h1>Dashboard</h1>
-    <br />
-    <p>
-      Sed laeditur hic coetuum magnificus splendor levitate paucorum incondita, ubi nati sunt
-      non reputantium, sed tamquam indulta licentia vitiis ad errores lapsorum ac lasciviam. ut
-      enim Simonides lyricus docet, beate perfecta ratione vieturo ante alia patriam esse convenit
-      gloriosam.
-    </p>
+      <v-tabs vertical class="scrollable">
+        <v-tab>
+          <v-icon left>mdi-account-group</v-icon>
+          équipe
+        </v-tab>
+        <v-tab>
+          <v-icon left>mdi-calendar-month</v-icon>
+          Réunions
+        </v-tab>
+        <v-tab-item>
+          <v-card flat>
+            <v-card-text>
+              <v-simple-table fixed-header height="300px">
+                <template v-slot:default>
+                  <thead>
+                    <tr>
+                      <th class="text-left">Name</th>
+                      <th class="text-left">Number</th>
+                      <th class="text-left">E-mail</th>
+                      <th class="text-left">Number Confirmed</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="item in team" :key="item.name">
+                      <td>{{ item.name }}</td>
+                      <td>{{ item.number }}</td>
+                      <td>{{ item.email }}</td>
+                      <td>
+                        <v-icon v-if="item.numberConfirmed" color="success">mdi-hand-okay</v-icon>
+                        <v-icon v-else color="error">mdi-alert-octagram</v-icon>
+                      </td>
+                    </tr>
+                  </tbody>
+                </template>
+              </v-simple-table>
+                <v-card-actions class="justify-center">
+                  <v-dialog v-model="addMemberDialog" persistent max-width="600px">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        color="success"
+                        v-bind="attrs"
+                        v-on="on"
+                        ><v-icon>mdi-account-plus</v-icon> Ajouter membre d'équipe
+                      </v-btn>
+                    </template>
+                    <v-card>
+                      <v-card-title>
+                        <span class="headline">Ajout d'un membre d'équipe</span>
+                      </v-card-title>
+                      <v-card-text>
+                        <v-container>
+                          <v-form
+                            ref="form"
+                            v-model="valid"
+                            lazy-validation
+                          >
+                            <v-text-field
+                              v-model="name"
+                              :counter="20"
+                              :rules="nameRules"
+                              label="Nom"
+                              required
+                            ></v-text-field>
+                            <v-text-field
+                              v-model="email"
+                              :rules="emailRules"
+                              label="E-mail"
+                              required
+                            ></v-text-field>
+                            <v-text-field
+                              v-model="password"
+                              :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+                              :rules="[passwordRules.required, passwordRules.min]"
+                              :type="show ? 'text' : 'password'"
+                              name="input-10-1"
+                              label="Password"
+                              hint="At least 8 characters"
+                              counter
+                              @click:append="show = !show"
+                            ></v-text-field>
+                            <v-row>
+                              <v-col cols="3">
+                                <v-select
+                                  v-model="prefix"
+                                  :items="prefixes"
+                                  :rules="[v => !!v || 'Le préfixe est obligatoire']"
+                                  label="Préfixe"
+                                  required
+                                ></v-select>
+                              </v-col>
+                              <v-col cols="9">
+                                <v-text-field
+                                  v-model="number"
+                                  :counter="9"
+                                  :rules="numberRules"
+                                  label="Numéro de téléphone"
+                                  required
+                                ></v-text-field>
+                              </v-col>
+                            </v-row>
+                          </v-form>
+                        </v-container>
+                      </v-card-text>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" text @click="addMemberDialog = false">Fermer</v-btn>
+                        <v-btn :disabled="!valid" color="blue darken-1" text @click="addTeamMember">Ajouter</v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-dialog>
+                </v-card-actions>
+            </v-card-text>
+          </v-card>
+        </v-tab-item>
+        <v-tab-item>
+          <v-card flat>
+            <v-card-text>
+              <p>
+                Morbi nec metus. Suspendisse faucibus, nunc et pellentesque egestas, lacus ante convallis tellus, vitae iaculis lacus elit id tortor. Sed mollis, eros et ultrices tempus, mauris ipsum aliquam libero, non adipiscing dolor urna a orci. Curabitur ligula sapien, tincidunt non, euismod vitae, posuere imperdiet, leo. Nunc sed turpis.
+              </p>
+              <p>
+                Suspendisse feugiat. Suspendisse faucibus, nunc et pellentesque egestas, lacus ante convallis tellus, vitae iaculis lacus elit id tortor. Proin viverra, ligula sit amet ultrices semper, ligula arcu tristique sapien, a accumsan nisi mauris ac eros. In hac habitasse platea dictumst. Fusce ac felis sit amet ligula pharetra condimentum.
+              </p>
+              <p>
+                Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, quis gravida magna mi a libero. Nam commodo suscipit quam. In consectetuer turpis ut velit. Sed cursus turpis vitae tortor. Aliquam eu nunc.
+              </p>
+              <p>
+                Etiam ut purus mattis mauris sodales aliquam. Ut varius tincidunt libero. Aenean viverra rhoncus pede. Duis leo. Fusce fermentum odio nec arcu.
+              </p>
+              <p class="mb-0">
+                Donec venenatis vulputate lorem. Aenean viverra rhoncus pede. In dui magna, posuere eget, vestibulum et, tempor auctor, justo. Fusce commodo aliquam arcu. Suspendisse enim turpis, dictum sed, iaculis a, condimentum nec, nisi.
+              </p>
+            </v-card-text>
+          </v-card>
+        </v-tab-item>
+      </v-tabs>
   </div>
 </template>
 
 <script>
 
+import firebase from 'firebase'
+
 export default {
 
   data: () => ({
-  })
+    team: [],
+    addMemberDialog: false,
+    valid: true,
+    name: '',
+    nameRules: [
+      v => !!v || 'Le nom est obligatoire',
+      v => (v && v.length <= 20) || 'Le nom doit faire moins de 20 lettres'
+    ],
+    email: '',
+    emailRules: [
+      v => !!v || 'L\'adresse e-mail est obligatoire',
+      v => /.+@.+\..+/.test(v) || 'L\'adresse que vous avez rentrée n\'est pas valide'
+    ],
+    show: false,
+    password: '',
+    passwordRules: {
+      required: value => !!value || 'Required.',
+      min: v => v.length >= 8 || 'Minimum 8 lettres'
+    },
+    numberRules: [
+      v => !!v || 'Le numéro de téléphone est obligatoire',
+      v => (v && v.length === 9) || 'Le numéro de téléphone doit etre composé de 9 chiffres'
+    ],
+    prefix: null,
+    prefixes: [
+      '+33'
+    ],
+    useruid: ''
+  }),
+  mounted () {
+    this.updateMembers()
+  },
+
+  methods: {
+    updateMembers () {
+      var usersRef = this.$secondaryApp.firestore().collection('users')
+      var query = usersRef.where('idSM', '==', firebase.auth().currentUser.uid)
+      query
+        .onSnapshot((querySnapshot) => {
+          this.team = []
+          querySnapshot.forEach((doc) => {
+            this.team.push(doc.data())
+          })
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    async addTeamMember () {
+      const errorHandler = (e) => {
+        console.log('erreur:', e)
+      }
+      var currentUser = firebase.auth().currentUser
+
+      this.$secondaryApp.auth().createUserWithEmailAndPassword(this.email, this.password)
+        .then((user) => {
+          firebase.firestore().collection('users').doc(user.user.uid).set({
+            name: this.name,
+            email: this.email,
+            number: this.prefix + this.number,
+            password: this.password,
+            isSM: false,
+            idSM: currentUser.uid,
+            numberConfirmed: false
+          }).then(() => {})
+          this.addMemberDialog = false
+        })
+        .catch(errorHandler)
+    }
+  }
 }
 </script>
+
+<style>
+
+.flex-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-container > :not(.scrollable):not(.non-scrollable) {
+  flex-shrink: 0;
+}
+
+.flex-container > .scrollable, .non-scrollable {
+  flex-grow: 1;
+}
+
+.non-scrollable {
+  overflow: hidden;
+}
+
+.scrollable {
+  overflow: auto !important;
+}
+
+</style>
