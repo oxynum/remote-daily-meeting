@@ -2,7 +2,7 @@
   <v-app>
     <v-main>
       <v-card
-      class="mx-auto overflow-hidden rounded-0"
+      class="rounded-0"
       height="100%"
     >
       <AppBar :drawer.sync="drawer"/>

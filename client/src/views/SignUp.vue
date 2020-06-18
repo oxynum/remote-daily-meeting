@@ -139,7 +139,8 @@ export default {
               name: this.name,
               email: this.email,
               number: this.prefix + this.number,
-              password: this.password
+              password: this.password,
+              isSM: true
             })
               .then(() => {
                 console.log('Sign up successful !')

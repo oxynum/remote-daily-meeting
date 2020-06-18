@@ -45,29 +45,22 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  var unsub
+  var user = firebase.auth().currentUser
   if (to.matched.some(record => record.meta.requiresAuth)) {
     console.log(to.path + ': requires auth')
-    unsub = firebase.auth().onAuthStateChanged((user) => {
-      if (!user) {
-        next({
-          path: '/login'
-        })
-      } else {
-        next()
-      }
-    })
-    unsub()
+    if (!user) {
+      next({
+        path: '/login'
+      })
+    } else {
+      next()
+    }
   } else if (to.matched.some(record => record.meta.hiddenForAuth)) {
-    unsub = firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        next(false)
-      } else {
-        next()
-      }
-    })
-
-    unsub()
+    if (user) {
+      next(false)
+    } else {
+      next()
+    }
   } else {
     next()
   }
