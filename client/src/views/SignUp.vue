@@ -20,7 +20,7 @@
       ></v-text-field>
       <v-text-field
         v-model="password"
-        :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+        :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
         :rules="[passwordRules.required, passwordRules.min]"
         :type="show ? 'text' : 'password'"
         name="input-10-1"
