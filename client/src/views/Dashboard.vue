@@ -20,6 +20,7 @@
                       <th class="text-left">Number</th>
                       <th class="text-left">E-mail</th>
                       <th class="text-left">Number Confirmed</th>
+                      <th class="text-left">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -29,7 +30,12 @@
                       <td>{{ item.email }}</td>
                       <td>
                         <v-icon v-if="item.numberConfirmed" color="success">mdi-hand-okay</v-icon>
-                        <v-icon v-else color="error">mdi-alert-octagram</v-icon>
+                        <v-icon v-else color="warning">mdi-alert-octagram</v-icon>
+                      </td>
+                      <td>
+                        <v-btn color="primary" icon><v-icon>mdi-pencil</v-icon></v-btn>
+                        -
+                        <v-btn color="error" icon @click="deleteMember(item)"><v-icon>mdi-delete</v-icon></v-btn>
                       </td>
                     </tr>
                   </tbody>
@@ -188,10 +194,8 @@ export default {
           this.team = []
           querySnapshot.forEach((doc) => {
             this.team.push(doc.data())
+            this.team[this.team.length - 1].id = doc.id
           })
-        })
-        .catch((err) => {
-          console.log(err)
         })
     },
     async addTeamMember () {
@@ -209,11 +213,32 @@ export default {
             password: this.password,
             isSM: false,
             idSM: currentUser.uid,
-            numberConfirmed: false
+            numberConfirmed: false,
+            confirmationSent: false
           }).then(() => {})
           this.addMemberDialog = false
+          this.$refs.form.reset()
         })
         .catch(errorHandler)
+    },
+    deleteMember (member) {
+      this.$secondaryApp.auth().signInWithEmailAndPassword(member.email, member.password)
+        .then((user) => {
+          user.user.delete()
+            .then(() => {
+            })
+            .catch((e) => {
+              console.log(e)
+            })
+        }).catch((err) => {
+          console.log(err)
+        })
+
+      this.$secondaryApp.firestore().collection('users').doc(member.id).delete().then(() => {
+        console.log(member.name + ' a été supprimé')
+      }).catch((error) => {
+        console.error('Error removing document: ', error)
+      })
     }
   }
 }

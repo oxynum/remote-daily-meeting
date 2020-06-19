@@ -72,7 +72,7 @@
             <v-btn
               color="green darken-1"
               text
-              @click="dialog = false"
+              @click="closeDialog"
             >
               Ok
             </v-btn>
@@ -151,6 +151,10 @@ export default {
           }).catch(errorHandler)
         })
         .catch(errorHandler)
+    },
+    closeDialog () {
+      this.dialog = false
+      this.$router.push('/')
     }
   }
 }
