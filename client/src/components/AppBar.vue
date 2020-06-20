@@ -22,12 +22,13 @@ export default {
     loggedIn: false
   }),
 
-  props: ['drawer'],
+  props: ['drawer', 'logOutBtn'],
 
   mounted () {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.loggedIn = true
+        this.$emit('update:logOutBtn', false)
       } else {
         this.loggedIn = false
       }
@@ -42,6 +43,7 @@ export default {
             .then(() => {
               if (this.$router.currentRoute !== '/') {
                 this.$router.push('/')
+                this.$emit('update:logOutBtn', true)
               }
             })
             .catch((e) => {

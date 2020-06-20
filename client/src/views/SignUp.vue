@@ -147,6 +147,11 @@ export default {
                 console.log('Sign up successful !')
                 this.$refs.form.reset()
                 this.dialog = true
+                firebase.auth().currentUser.sendEmailVerification()
+                  .then(() => {})
+                  .catch((err) => {
+                    console.log(err)
+                  })
               })
               .catch(errorHandler)
           }).catch(errorHandler)
