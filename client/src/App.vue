@@ -5,7 +5,7 @@
       class="rounded-0"
       height="100%"
     >
-      <AppBar :drawer.sync="drawer"/>
+      <AppBar :drawer.sync="drawer" :logOutBtn.sync="logOutBtn" />
       <v-navigation-drawer
         v-model="drawer"
         absolute
@@ -46,7 +46,21 @@
         </v-list>
       </v-navigation-drawer>
       <v-card-text>
-      <router-view></router-view>
+        <div v-if="!logOutBtn">
+        <v-alert
+          prominent
+          type="warning"
+          v-if="!isEmailVerified()"
+        >
+          <v-row align="center">
+            <v-col class="text-center grow">Votre adresse e-mail n'est pas vérifiée. Veuillez consulter vos e-mails pour le mail de vérification.</v-col>
+            <v-col class="shrink">
+              <v-btn>Envoyer de nouveau</v-btn>
+            </v-col>
+          </v-row>
+        </v-alert>
+        </div>
+        <router-view></router-view>
       </v-card-text>
     </v-card>
     </v-main>
@@ -55,15 +69,29 @@
 
 <script>
 
+import firebase from 'firebase'
 import AppBar from './components/AppBar.vue'
 
 export default {
   data: () => ({
-    drawer: false
+    drawer: false,
+    logOutBtn: false
   }),
 
   components: {
     AppBar
+  },
+
+  methods: {
+    isConnected () {
+      return firebase.auth().currentUser !== null
+    },
+    isEmailVerified () {
+      if (this.isConnected()) {
+        return firebase.auth().currentUser.emailVerified
+      }
+      return true
+    }
   }
 }
 </script>
