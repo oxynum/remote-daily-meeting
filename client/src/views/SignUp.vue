@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="signup">
     <v-form
       ref="form"
       v-model="valid"
