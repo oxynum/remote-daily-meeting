@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="signup">
     <v-form
       ref="form"
       v-model="valid"
@@ -140,7 +140,8 @@ export default {
               email: this.email,
               number: this.prefix + this.number,
               password: this.password,
-              isSM: true
+              isSM: true,
+              active: true
             })
               .then(() => {
                 console.log('Sign up successful !')

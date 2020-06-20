@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="login">
     <v-form
       ref="form"
       v-model="valid"
@@ -31,6 +31,17 @@
         Valider
       </v-btn>
     </v-form>
+    <v-dialog v-model="activationDialog" persistent max-width="290">
+        <v-card>
+          <v-card-title class="headline">Use Google's location service?</v-card-title>
+          <v-card-text>Let Google help apps determine location. This means sending anonymous location data to Google, even when no apps are running.</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" text @click="activationDialog = false">Disagree</v-btn>
+            <v-btn color="green darken-1" text @click="signIn(true)">Agree</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     <br />
   </div>
 </template>
@@ -51,7 +62,8 @@ export default {
     password: '',
     passwordRules: [
       value => !!value || 'Required.'
-    ]
+    ],
+    activationDialog: false
   }),
   mounted () {
   },
@@ -61,14 +73,48 @@ export default {
         this.signIn()
       }
     },
-    signIn () {
-      firebase.auth()
-        .signInWithEmailAndPassword(this.email, this.password)
-        .then(() => {
-          this.$router.push('/')
-        }).catch((err) => {
-          console.log(err)
-        })
+    signIn (bypassCheck = false) {
+      if (!bypassCheck) {
+        // We check if the user's account is active
+        firebase.firestore().collection('users')
+          .where('email', '==', this.email)
+          .where('password', '==', this.password)
+          .get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              if (!doc.data().active) {
+                this.activationDialog = true
+              } else {
+                firebase.auth()
+                  .signInWithEmailAndPassword(this.email, this.password)
+                  .then(() => {
+                    this.$router.push('/')
+                  }).catch((err) => {
+                    console.log(err)
+                  })
+              }
+            })
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+      } else {
+        // We have to activate the account after we logged in
+        firebase.auth()
+          .signInWithEmailAndPassword(this.email, this.password)
+          .then(() => {
+            this.$secondaryApp.firestore().collection('users').doc(firebase.auth().currentUser.uid).update({
+              active: true
+            }).then(() => {
+              console.log('Le compte ' + firebase.auth().currentUser.uid + ' a été réactivé')
+            }).catch((error) => {
+              console.error('Error updating document: ', error)
+            })
+            this.$router.push('/')
+          }).catch((err) => {
+            console.log(err)
+          })
+      }
     }
   }
 }
