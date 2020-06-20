@@ -12,14 +12,14 @@
         <v-tab-item>
           <v-card flat>
             <v-card-text>
-              <v-simple-table fixed-header height="300px">
+              <v-simple-table v-if="team.length" fixed-header height="300px">
                 <template v-slot:default>
                   <thead>
                     <tr>
                       <th class="text-left">Name</th>
                       <th class="text-left">Number</th>
                       <th class="text-left">E-mail</th>
-                      <th class="text-left">Number Confirmed</th>
+                      <th class="text-left">Numéro confirmé</th>
                       <th class="text-left">Actions</th>
                     </tr>
                   </thead>
@@ -35,12 +35,52 @@
                       <td>
                         <v-btn color="primary" icon><v-icon>mdi-pencil</v-icon></v-btn>
                         -
-                        <v-btn color="error" icon @click="deleteMember(item)"><v-icon>mdi-delete</v-icon></v-btn>
+                        <v-dialog
+                          v-model="confirmDeleteDialog"
+                          width="500"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              color="error"
+                              icon
+                              @click="deleteMemberButton(item)"
+                              v-bind="attrs"
+                              v-on="on"
+                            >
+                              <v-icon>mdi-delete</v-icon>
+                            </v-btn>
+                          </template>
+                          <v-card>
+                            <v-card-title
+                              class="headline grey lighten-2"
+                              primary-title
+                            >
+                              Confirmation
+                            </v-card-title>
+                            <v-card-text>
+                              <br/>
+                              Êtes vous sûr de vouloir supprimer {{ item.name }} ?
+                            </v-card-text>
+                            <v-card-actions>
+                              <v-spacer></v-spacer>
+                              <v-btn
+                                color="error"
+                                @click="deleteMember"
+                              >
+                                Supprimer
+                              </v-btn>
+                            </v-card-actions>
+                          </v-card>
+                        </v-dialog>
                       </td>
                     </tr>
                   </tbody>
                 </template>
               </v-simple-table>
+              <div v-else class="text-center">
+                <h3>Cette équipe est vide pour le moment. Vous pouvez désormais y ajouter des membres.</h3>
+                <br/>
+              </div>
                 <v-card-actions class="justify-center">
                   <v-dialog v-model="addMemberDialog" persistent max-width="600px">
                     <template v-slot:activator="{ on, attrs }">
@@ -179,7 +219,9 @@ export default {
     prefixes: [
       '+33'
     ],
-    useruid: ''
+    useruid: '',
+    confirmDeleteDialog: false,
+    memberToDelete: null
   }),
   mounted () {
     this.updateMembers()
@@ -188,7 +230,9 @@ export default {
   methods: {
     updateMembers () {
       var usersRef = this.$secondaryApp.firestore().collection('users')
-      var query = usersRef.where('idSM', '==', firebase.auth().currentUser.uid)
+      var query = usersRef
+        .where('idSM', '==', firebase.auth().currentUser.uid)
+        .where('active', '==', true)
       query
         .onSnapshot((querySnapshot) => {
           this.team = []
@@ -214,28 +258,25 @@ export default {
             isSM: false,
             idSM: currentUser.uid,
             numberConfirmed: false,
-            confirmationSent: false
+            confirmationSent: false,
+            active: true
           }).then(() => {})
           this.addMemberDialog = false
           this.$refs.form.reset()
         })
         .catch(errorHandler)
     },
-    deleteMember (member) {
-      this.$secondaryApp.auth().signInWithEmailAndPassword(member.email, member.password)
-        .then((user) => {
-          user.user.delete()
-            .then(() => {
-            })
-            .catch((e) => {
-              console.log(e)
-            })
-        }).catch((err) => {
-          console.log(err)
-        })
+    deleteMemberButton (member) {
+      this.memberToDelete = member
+      this.confirmDeleteDialog = true
+    },
+    deleteMember () {
+      this.confirmDeleteDialog = false
 
-      this.$secondaryApp.firestore().collection('users').doc(member.id).delete().then(() => {
-        console.log(member.name + ' a été supprimé')
+      this.$secondaryApp.firestore().collection('users').doc(this.memberToDelete.id).update({
+        active: false
+      }).then(() => {
+        console.log(this.memberToDelete.name + ' a été supprimé')
       }).catch((error) => {
         console.error('Error removing document: ', error)
       })
