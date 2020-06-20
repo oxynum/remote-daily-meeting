@@ -55,7 +55,7 @@
           <v-row align="center">
             <v-col class="text-center grow">Votre adresse e-mail n'est pas vérifiée. Veuillez consulter vos e-mails pour le mail de vérification.</v-col>
             <v-col class="shrink">
-              <v-btn>Envoyer de nouveau</v-btn>
+              <v-btn @click="sendVerifEmail">Envoyer de nouveau</v-btn>
             </v-col>
           </v-row>
         </v-alert>
@@ -91,6 +91,15 @@ export default {
         return firebase.auth().currentUser.emailVerified
       }
       return true
+    },
+    sendVerifEmail () {
+      firebase.auth().currentUser.sendEmailVerification()
+        .then(() => {
+          console.log('Sent e-mail to ' + firebase.auth().currentUser.email)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   }
 }
