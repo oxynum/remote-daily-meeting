@@ -10,7 +10,7 @@
 
 import firebase from 'firebase'
 
-import ScrumMasterDashboard from '../components/ScrumMasterDashboard.vue'
+import ScrumMasterDashboard from '../components/ScrumMaster/Dashboard.vue'
 
 export default {
 
