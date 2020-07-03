@@ -37,6 +37,22 @@ const routes = [
     meta: {
       requiresAuth: true
     }
+  },
+  {
+    path: '/dashboard/:team/members',
+    name: 'Dashboard',
+    component: Dashboard,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/dashboard/:team/planning',
+    name: 'Dashboard',
+    component: Dashboard,
+    meta: {
+      requiresAuth: true
+    }
   }
 ]
 

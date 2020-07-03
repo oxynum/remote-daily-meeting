@@ -1,18 +1,18 @@
 <template>
   <div class="scrummasterdashboard">
-      <v-tabs vertical class="scrollable">
+      <v-tabs vertical>
         <v-tab>
           <v-icon left>mdi-account-group</v-icon>
-          équipe
+          équipes
         </v-tab>
         <v-tab>
           <v-icon left>mdi-calendar-month</v-icon>
           Réunions
         </v-tab>
-        <v-tab-item>
+        <v-tab-item class="full-height-tab">
           <TeamManagement/>
         </v-tab-item>
-        <v-tab-item>
+        <v-tab-item class="full-height-tab">
           <TimeSettings/>
         </v-tab-item>
       </v-tabs>
@@ -32,7 +32,11 @@ export default {
   },
 
   data: () => ({
-  })
+    currentTeam: null
+  }),
+
+  mounted () {
+  }
 }
 </script>
 
@@ -58,5 +62,8 @@ export default {
 .scrollable {
   overflow: auto !important;
 }
-
+.full-height-tab {
+  height: calc(100vh - 100px); /* Adjust 270px to suits your needs */
+  overflow-y: auto;
+}
 </style>
