@@ -90,7 +90,7 @@ export default {
           if (this.teams.length > 0) {
             if (!isNaN(this.$route.params.team)) {
               var parsedParam = parseInt(this.$route.params.team, 10)
-              if (parsedParam < this.teams.length) {
+              if (parsedParam <= this.teams.length) {
                 this.currentTeam = this.teams[parsedParam - 1]
               } else {
                 this.currentTeam = this.teams[0]
